@@ -1,0 +1,22 @@
+{
+  "name": "mern1",
+  "version": "1.0.0",
+  "description": "tutorial for a simple RESTful API with Node.js and Express.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bgdnvk/MERN-stack-1.git"
+  },
+  "author": "Bogdan Novykov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bgdnvk/MERN-stack-1/issues"
+  },
+  "homepage": "https://github.com/bgdnvk/MERN-stack-1#readme",
+  "dependencies": {
+    "express": "^4.17.3"
+  }
+}
