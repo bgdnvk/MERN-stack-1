@@ -17,14 +17,6 @@ let infoDB = [
         date: "2022-03-10T17:30:31.098Z"
     }
 ]
-//a helper function to generate an id
-//if you want to make it simpler just return infoDB.length + 1
-const generateId = () => {
-    const maxId = infoDB.length > 0
-        ? Math.max(...infoDB.map(i => i.id))
-        : 0
-    return maxId + 1
-}
 //this is our first route
 //we want to get http://localhost:3001/
 //the app already knows that we are on localhost
@@ -39,6 +31,14 @@ app.get('/api/info', (req, res) => {
     //we send the information back in JSON format
     res.json(infoDB)
 })
+//a helper function to generate an id
+//if you want to make it simpler just return infoDB.length + 1
+const generateId = () => {
+    const maxId = infoDB.length > 0
+        ? Math.max(...infoDB.map(i => i.id))
+        : 0
+    return maxId + 1
+}
 //an endpoint to add a note
 app.post('/api/info', (req, res) => {
     //without the middleware express.json() on L6 we wouldn't be able to read this data
@@ -78,34 +78,49 @@ app.delete('/api/info/:id', (req, res) => {
     //return a code with no content and close the operation
     res.status(204).end()
 })
-//an endpoint to update info
-app.put('/api/info/:id', (req, res) => {
-    //get the data from the body
-    const body = req.body
-    //check what you are getting(feel free to add console logs everywhere)
-    console.log(body)
-    //parse the date into a number
-    const id = Number(req.params.id)
-
+//helper function for the update operation
+//we get the id of the object we want to modify
+//then return the object to modify and its index in infoDB
+const getInfoObjectAndIndex = (id) => {
+    //declare our variables
     let infoToModify = {}
     let indexOfInfo = 0
-
+    //find the object through the id and assign our values
     for(let i = 0; i < infoDB.length; i++){
         if(id === infoDB[i].id) {
             infoToModify = infoDB[i]
             indexOfInfo = i
         } 
     }
-
+    //return our values in form of an array
+    //so we can use destructuring to assign our variables
+    return [infoToModify, indexOfInfo]
+}
+//an endpoint to update info
+app.put('/api/info/:id', (req, res) => {
+    //get the data from the body
+    const body = req.body
+    //if we don't get the information for our object throw an error
+    if(!body.info) return res.status(400).json({
+        error: 'the content is missing'
+    })
+    //check what you are getting(feel free to add console logs everywhere)
+    console.log(body)
+    //parse the date into a number
+    const id = Number(req.params.id)
+    //we use destructuring assignment here: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
+    const [infoToModify, indexOfInfo] = getInfoObjectAndIndex(id)
+    //a console log to show the object we got
     console.log(infoToModify)
+    //we make a new object with the new values
     const modifiedInfo = {
         id: infoToModify.id,
         info: body.info,
         date: infoToModify.date
     }
-
-    // infoDB.splice(indexOfInfo, 0, modifiedInfo)
+    //insert (or overwrite) our object into the database
     infoDB[indexOfInfo] = modifiedInfo
+    //send a success status
     res.status(200).json(modifiedInfo).end()
 })
 //define the port where our app is gonna run
