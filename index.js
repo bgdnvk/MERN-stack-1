@@ -9,12 +9,12 @@ let infoDB = [
     {
         id: 1,
         info: "example of information",
-        date: "2022-02-10T17:30:31.098Z"
+        date: "2022-04-03T20:00:22.158Z"
     },
     {
         id: 2,
         info: "example of information2, put anything here",
-        date: "2022-03-10T17:30:31.098Z"
+        date: "2022-03-03T20:00:22.158Z"
     }
 ]
 //this is our first route
@@ -29,7 +29,8 @@ app.get('/', (req, res) => {
 //an endpoint to return all our infor back
 app.get('/api/info', (req, res) => {
     //we send the information back in JSON format
-    res.json(infoDB)
+    //along with a 200 status which means it's successful
+    res.status(200).json(infoDB)
 })
 //a helper function to generate an id
 //if you want to make it simpler just return infoDB.length + 1
@@ -122,6 +123,19 @@ app.put('/api/info/:id', (req, res) => {
     infoDB[indexOfInfo] = modifiedInfo
     //send a success status
     res.status(200).json(modifiedInfo).end()
+})
+//and endpoint to return an object with a specific id
+app.get('/api/info/:id', (req, res ) =>{
+    //we parse the request id since it's a string
+    const id = Number(req.params.id)
+    //find the object the user wants in our database
+    const infoObject = infoDB.find(info => info.id === id)
+    //return with the needed status and the object if you find it
+    infoObject
+        ? res.status(200).json(infoObject).end()
+        : res.status(404).json({
+            error: `an object doesn't exist with the id ${id} in our database`
+        }).end()
 })
 //define the port where our app is gonna run
 const PORT = 3001
